@@ -1,9 +1,13 @@
 name: fastapi-app
 
 on:
+  push:
+    branches:
+      - main
+      - Feature/**
   pull_request:
     branches:
-      - main    
+      - main
 
 jobs:
   test:
@@ -24,7 +28,13 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run Linter (flake8)
+        run: |
+          source venv/bin/activate
+          pip install flake8
+          flake8 . --ignore=E501
+
       - name: Run tests
         run: | 
           source venv/bin/activate
-          pytest --maxfail=1 --disable-warnings
+          pytest --maxfail=1 --disable-warnings --timeout=30 || exit 1
